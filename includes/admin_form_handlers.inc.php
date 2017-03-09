@@ -84,9 +84,6 @@ function run_cron() {
 function get_items () {
   $goodsConnector = new GoodsReportConnector('all');
   foreach ($goodsConnector->getItems(0, 50) as $item) {
-    // dvm($goodsConnector->getModel($item), "getModel");
-    // dvm($goodsConnector->getModel2($item), "getModel2");
-    // dpm($goodsConnector->getModel($item), 'getModel');
 
     $local_good = new Goods( $goodsConnector->getModel($item) );
 
@@ -94,11 +91,13 @@ function get_items () {
       if ($local_good->is_new()) {
         dvm('это новый');
       }
-      dvm($local_good->getModel(), 'model');
-      dvm($local_good->getNid(), 'nid');
-      dvm($local_good->getSell_price(), 'price');
-      dvm($local_good->getStock(), 'stock');
-      dvm($local_good->getName(), 'name');
+      dpm($local_good->getModel(), 'model');
+      dpm($local_good->getSell_price(), 'local price');
+      dpm($goodsConnector->getSell_price($item), 'remote price');
+      dpm($local_good->getQuantity(), 'local quantity');
+      dpm($goodsConnector->getQuantity($item), 'remote quantity');
+      dpm($local_good->getName(), 'local name');
+      dpm($goodsConnector->getName($item), 'remote name');
     }
 
   }

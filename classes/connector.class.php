@@ -258,6 +258,10 @@ class GoodsReportConnector extends ReportConnector
   public function getModel2($item){
     return $item->article;
   }
+
+  public function getName($item) {
+    return $item->name;
+  }
 }
 
  ?>

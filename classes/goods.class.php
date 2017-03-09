@@ -80,7 +80,7 @@ class Goods
     return $this->sell_price;
   }
   
-  public function getStock(){
+  public function getQuantity(){
     if ($this->nid && $this->code) {
        $query = db_select('uc_product_stock', 'stocks')
         ->fields('stocks', array('sku', 'nid', 'active', 'stock', 'threshold'))
@@ -99,7 +99,92 @@ class Goods
   }
   
   public function getName(){
+    if ($this->nid) {
+      $query = db_select('node', 'n')
+        ->fields('n', array('nid', 'title', 'type', 'status'))
+        ->condition('n.nid', $this->nid)
+        ->condition('n.type', 'product')
+        ->execute()
+        ->fetchAll();
+
+        if (count($query) == 1) {
+          foreach ($query as $row) {
+            return $row->title;
+          }
+        }
+    }
     return $this->name;
+  }
+
+  public function setName($title) {
+    if ($this->nid) {
+      $query = db_select('node', 'n')
+        ->fields('n', array('vid'))
+        ->condition('n.nid', $this->nid)
+        ->condition('n.type', 'product')
+        ->execute()
+        ->fetchAll();
+
+        if (count($query) == 1) {
+          foreach ($query as $row) {
+            $vid = $row->vid;
+            db_update('node')
+              ->fields(array('title' => $title))
+              ->condition('nid', $this->nid)
+              ->execute();
+            db_update('node_revision')
+              ->fields(array('title' => $title))
+              ->condition('nid', $this->nid)
+              ->condition('vid', $vid)
+              ->execute();
+
+
+            return TRUE;
+          }
+        }
+    }
+  }
+
+
+
+  public function setSell_price($price) {
+    if ($this->nid) {
+      $query = db_select('node', 'n')
+        ->fields('n', array('vid'))
+        ->condition('n.nid', $this->nid)
+        ->condition('n.type', 'product')
+        ->execute()
+        ->fetchAll();
+
+        if (count($query) == 1) {
+          foreach ($query as $row) {
+            $vid = $row->vid;
+            db_update('uc_products')
+              ->fields(array('sell_price' => $price))
+              ->condition('nid', $this->nid)
+              ->condition('vid', $vid)
+              ->execute();
+
+
+            return TRUE;
+          }
+        
+      }
+    }
+  }
+
+
+
+  public function setQuantity($quantity) {
+    if ($this->nid && $this->code) {
+      db_update('uc_product_stock')
+              ->fields(array('stock' => $quantity))
+              ->condition('nid', $this->nid)
+              ->condition('sku', $this->code)
+              ->execute();
+
+        return TRUE;
+    }
   }
 
 }
