@@ -1,0 +1,16 @@
+name = surweb moysklad module 
+description = Модуль синхронизации остатков, названий и цен с моим складом ()
+core = 7.x
+
+configure = admin/store/settings/moysklad-v2
+
+dependencies[] = uc_product
+dependencies[] = uc_store
+dependencies[] = uc_stock
+
+files[] = classes/connector.class.php
+files[] = classes/goods.class.php
+files[] = classes/admin_form.class.php
+files[] = classes/syncpage.class.php
+version="7.x-2.0-dev"
+project="moysklad"

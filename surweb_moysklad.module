@@ -1,0 +1,70 @@
+<?php 
+
+include_once('includes/cron_n_queue.inc.php');
+include_once('includes/admin_form_handlers.inc.php');
+
+/**
+*  Create access permissions
+*/
+
+function surweb_moysklad_permission() {
+  return array(
+    'surweb moysklad' => array(
+      'title' => t('Настраивать синхронизацию моего склада'),
+      'description' => 'Управлять настройками синхронизации моего склада',
+    ),
+  );
+}
+
+
+
+
+/**
+ * Implements hook menu
+ */
+
+function surweb_moysklad_menu () {
+  $items = array();
+
+  $items['admin/store/settings/moysklad-v2'] = array(
+    'title' => 'НОВАЯ Синхронизация с моим складом',
+    'description' => 'Настройки и информация по синхронизации с моим складом',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('moysklad_admin_page'),
+    'access arguments' => array('surweb moysklad'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+function moysklad_admin_page ($form, &$form_state) {
+	$adminPage = new AdminPage();
+  $test = new ReportConnector('all');
+  // $listOfRequests = $test->getQueriesList(8000, array('offset' => 0, 'limit' => 50));
+  // dpm($test->getSize());
+  // dpm($listOfRequests);
+
+  /* 
+  $remote_data = $test->getAllItems(3000);
+
+  // DB search
+  $t_start = microtime(true);
+  $products = array();
+  foreach ($remote_data as $row) {
+    // dpm($row);
+    $product = db_select('uc_products', 'p')
+      ->fields('p', array('nid', 'model'))
+      ->condition('p.model', $row->code)
+      ->execute()
+      ->fetchAll();
+
+    $products[] = $product;
+  }
+      dpm($products);
+      dpm(microtime(true) - $t_start, 'DB timer');
+
+*/
+
+	return system_settings_form( $adminPage->getForm() );
+}
