@@ -84,11 +84,22 @@ function run_cron() {
 function get_items () {
   $goodsConnector = new GoodsReportConnector('all');
   foreach ($goodsConnector->getItems(0, 50) as $item) {
-    dvm($goodsConnector->getModel($item), "getModel");
-    dvm($goodsConnector->getModel2($item), "getModel2");
+    // dvm($goodsConnector->getModel($item), "getModel");
+    // dvm($goodsConnector->getModel2($item), "getModel2");
     // dpm($goodsConnector->getModel($item), 'getModel');
 
     $local_good = new Goods( $goodsConnector->getModel($item) );
+
+    if ($local_good->exists()) {
+      if ($local_good->is_new()) {
+        dvm('это новый');
+      }
+      dvm($local_good->getModel(), 'model');
+      dvm($local_good->getNid(), 'nid');
+      dvm($local_good->getSell_price(), 'price');
+      dvm($local_good->getStock(), 'stock');
+      dvm($local_good->getName(), 'name');
+    }
 
   }
 }
