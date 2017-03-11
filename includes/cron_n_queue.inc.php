@@ -23,18 +23,29 @@ function queueWorker_goods($data) {
 
     if ($local_good->exists()) {
       if (!$local_good->is_new()) {
-          // file_put_contents('logs/queue_log.txt', $local_good->getModel().'это новый'."\r\n", FILE_APPEND);
-        if (($local_good->getSell_price()*100) != ($goodsConnector->getSell_price($item))) {
-          $local_good->setSell_price(($goodsConnector->getSell_price($item))/100);
+        // проверяет совпадение цены договор интерфейса - внутренний
+        if (($local_good->getSell_price()) != ($goodsConnector->getSell_price($item))) {
+          $local_good->setSell_price(($goodsConnector->getSell_price($item)));
         }
+        // проверяет количество на складе 
         if ($local_good->getQuantity() != $goodsConnector->getQuantity($item)) {
           $local_good->setQuantity($goodsConnector->getQuantity($item));
           file_put_contents('logs/queue_log.txt', $local_good->getModel()."изменил количество на".$goodsConnector->getQuantity($item)."\r\n", FILE_APPEND);
         }
+        // проверяет совпадение заголовков
         if ($local_good->getName() != $goodsConnector->getName($item)) {
           $local_good->setName($goodsConnector->getName($item));
         }
-      } 
+      } else {
+        // создание нового товара при изначальном не совпадении sku
+        $nid = $local_good->newItem($goodsConnector->getModel($item));
+        $local_good->setName($goodsConnector->getName($item));
+        $local_good->setSell_price($goodsConnector->getSell_price($item));
+        $local_good->setQuantity($goodsConnector->getquantity($item));
+        
+        file_put_contents('logs/queue_log.txt', "Создан новый товар : ".$nid."\r\n", FILE_APPEND);
+
+      }
     }
 
   }

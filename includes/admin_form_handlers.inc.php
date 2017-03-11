@@ -90,21 +90,48 @@ function get_items () {
     if ($local_good->exists()) {
       if ($local_good->is_new()) {
         dvm('это новый');
+        $nid = $local_good->newItem($goodsConnector->getModel($item));
+        $local_good->setName($goodsConnector->getName($item));
+        $local_good->setSell_price($goodsConnector->getSell_price($item));
+        $local_good->setQuantity($goodsConnector->getquantity($item));
+
+        dpm($nid, "NEW nid");
+
+      } else {
+
+        // dpm($local_good->getModel(), 'model');
+        // dpm($local_good->getSell_price(), 'local price');
+        // dpm($goodsConnector->getSell_price($item), 'remote price');
+        // dpm($local_good->getQuantity(), 'local quantity');
+        // dpm($goodsConnector->getQuantity($item), 'remote quantity');
+        // dpm($local_good->getName(), 'local name');
+        // dpm($goodsConnector->getName($item), 'remote name');
       }
-      dpm($local_good->getModel(), 'model');
-      dpm($local_good->getSell_price(), 'local price');
-      dpm($goodsConnector->getSell_price($item), 'remote price');
-      dpm($local_good->getQuantity(), 'local quantity');
-      dpm($goodsConnector->getQuantity($item), 'remote quantity');
-      dpm($local_good->getName(), 'local name');
-      dpm($goodsConnector->getName($item), 'remote name');
     }
 
   }
+}
+
+function createOneNew()
+{
+  dpm(time());
+  $newGoodTest = new Goods();
+
+  $newGoodTest->newItem();
+  $newGoodTest->setName('DODOOD');
+  $newGoodTest->setSell_price(1000);
+  $newGoodTest->setQuantity(13);
+
 }
 
 
 function product_interface () {
   $pro = new Goods('TG-216-1139R-LD-E');
 
+}
+
+
+function createOneNewOrder() {
+  $moyOrder = new OrderConnector();
+  dpm($moyOrder->setOrder());
 }

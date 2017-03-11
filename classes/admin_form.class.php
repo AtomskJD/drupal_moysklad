@@ -57,14 +57,14 @@ class AdminPage
                 '#submit' => array('goods_queue_set'),
                 );
 
-        // КНОПКА очистки ОЧЕРЕДИ
+/*        // КНОПКА очистки ОЧЕРЕДИ
         $this->form['queue_claim'] = array(
                 '#type' => 'submit',
                 '#value' => 'Очистить очередь',
                 '#weight' => 25,
                 '#submit' => array('queue_claim'),
                 );
-
+*/
         // КНОПКА очистки запуска КРОНА
         $this->form['run_cron'] = array(
                 '#type' => 'submit',
@@ -74,30 +74,47 @@ class AdminPage
                 );
 
 
-        // КНОПКА очистки запуска КРОНА
+/*        // КНОПКА очистки запуска КРОНА
         $this->form['get_items'] = array(
                 '#type' => 'submit',
                 '#value' => 'GET ITEMS 50',
                 '#weight' => 35,
                 '#submit' => array('get_items'),
                 );
-
-        // КНОПКА проверка
+*/
+/*        // КНОПКА проверка
         $this->form['probe_conn'] = array(
                 '#type' => 'submit',
                 '#value' => 'Probe Connection',
                 '#weight' => 40,
                 '#submit' => array('get_probe_connection'),
                 );
-
-        // КНОПКА проверки объекта базы
+*/
+/*        // КНОПКА проверки объекта базы
         $this->form['product_interface'] = array(
                 '#type' => 'submit',
                 '#value' => 'Probe PRODUCT',
                 '#weight' => 50,
                 '#submit' => array('product_interface'),
                 );
+*/
 
+/*        // КНОПКА для создания нового товара
+        $this->form['create_new_product'] = array(
+                '#type' => 'submit',
+                '#value' => 'CREATE new PRODUCT',
+                '#weight' => 55,
+                '#submit' => array('createOneNew'),
+                );
+
+*/
+        // КНОПКА для создания нового заказа
+        $this->form['create_new_product'] = array(
+                '#type' => 'submit',
+                '#value' => 'CREATE new ORDER',
+                '#weight' => 40,
+                '#submit' => array('createOneNewOrder'),
+                );
 
         
     }

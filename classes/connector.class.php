@@ -45,6 +45,16 @@ class Connector
   {
     $this->url = self::BASEURL . $url;
   }
+  protected function setEntity($entity)
+  {
+    $this->url = self::BASEURL . "entity/" . $entity;
+  }
+
+  // // впринципе покрывает 90% API
+  // function __construct($entity)
+  // {
+  //   $this->setUrl('entity/' . $entity);
+  // }
 
 
 
@@ -79,6 +89,36 @@ class Connector
         return json_decode($return);
   }
 
+  /**
+   * Защищенный интерфейс для записи в мойсклад
+   */
+  protected function setItemsInterface($body)
+  {
+        $headers = array(
+      'Content-Type:application/json',
+      'Authorization: Basic '. base64_encode(variable_get('moysklad_login').":". variable_get('moysklad_pass') ) // <---
+      );
+
+      $url = $this->url;
+
+      // dpm($url);
+
+        $process = curl_init($url);
+
+        curl_setopt($process, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($process, CURLOPT_HEADER, 0);
+        curl_setopt($process, CURLOPT_TIMEOUT, 30);
+        curl_setopt($process, CURLOPT_POST, 1);
+        curl_setopt($process, CURLOPT_POSTFIELDS, $body);
+
+        curl_setopt($process, CURLOPT_RETURNTRANSFER, TRUE);
+        $return = curl_exec($process);
+        // dpm(json_decode($return));
+
+        curl_close($process);
+
+        return json_decode($return);
+  }
 
 
   public function probeConnection()
@@ -163,6 +203,11 @@ class Connector
     return $this->getItemsInterface($offset, $limit)->rows;
   }
 
+  public function getMeta() {
+    return $this->getItemsInterface(0, 1)->meta;
+
+  }
+
 
 
   /**
@@ -193,53 +238,114 @@ class Connector
 
 }
 
-
 /**
-* test conn 
+* Класс организации
 */
-class EntityConnector extends Connector
+class Organization extends Connector
 {
-  
-  public function __construct($entity){
-    $this->setUrl('entity/' . $entity);
-    // dpm($this->probeConnection());
-    // dpm($this->getAllItems());
+  function __construct()
+  {
+    $this->setEntity("organization");  
   }
 
+  public function getOrganization()
+  {
+    return $this->getItems(0, 1);
+  }
 }
 
-class ReportConnector extends Connector
+
+/**
+* Класс контрагента
+*/
+class Agent extends Connector
 {
-  
-  public function __construct($entity){
-    $this->setUrl('report/stock/' . $entity);
-    // dpm($this->probeConnection());
-    // dpm($this->getAllItems());
+  function __construct()
+  {
+    $this->setEntity("counterparty");  
   }
 
-  public function updateData($limit)
+  public function getByMail($mail)
   {
     $size = $this->getSize();
     $limit = 100;
     $offset = 0;
     $result;
-
-    while (($size > $offset) && ($offset < $limitdbea)) {
+    while ( $size > $offset ) {
       foreach ($this->getItemsInterface($offset, $limit)->rows as $row) {
         $result[] = $row;
+        if ($row->mail == $mail) {
+          return $row;
+        }
       }
 
 
       $offset += $limit;
     }
-    return $result;
+
+  }
+}
+
+
+/**
+* класс создания заказа
+*/
+class OrderConnector extends Connector
+{
+
+  function __construct()
+  {
+    $this->setEntity("customerOrder");
+  }
+
+
+  public function setOrder()
+  {
+    $organization = new Organization();
+    dpm($organization->getMeta());
+
+    $agent = new Agent();
+    // find current agent
+    $t_start = microtime(true);
+      $agent->getByMail("dev@surweb.ru");
+    dpm(microtime(true) - $t_start, "request timer");
+
+    $body = '{
+              "name": "00003",
+              "organization": {
+                "meta": {
+                  "href": "https://online.moysklad.ru/api/remap/1.0/entity/organization/850c8195-f504-11e5-8a84-bae50000015e",
+                  "type": "organization",
+                  "mediaType": "application/json"
+                }
+              },
+              "agent": {
+                "meta": {
+                  "href": "https://online.moysklad.ru/api/remap/1.0/entity/counterparty/9794d400-f689-11e5-8a84-bae500000078",
+                  "type": "counterparty",
+                  "mediaType": "application/json"
+                }
+              }
+            }';
+
+    $respond = $this->setItemsInterface($body);
+    if ($respond->errors) {
+      return array('errors' => $respond->errors);
+    } else {
+      return $respond;
+    }
   }
 
 }
 
 
-class GoodsReportConnector extends ReportConnector
+class GoodsReportConnector extends Connector
 {
+
+  public function __construct($entity){
+    $this->setUrl('report/stock/' . $entity);
+  }
+
   // набор обработчиков для интерфейса
   public function getQuantity($item){
     return $item->quantity;
@@ -264,4 +370,53 @@ class GoodsReportConnector extends ReportConnector
   }
 }
 
- ?>
+
+
+
+
+
+/**
+* test conn 
+*/
+class EntityConnector extends Connector
+{
+  
+  public function __construct($entity){
+    $this->setUrl('entity/' . $entity);
+    // dpm($this->probeConnection());
+    // dpm($this->getAllItems());
+  }
+
+}
+
+
+
+/**
+ * Уже тестовый
+ */
+class ReportConnector extends Connector
+{
+  
+  public function __construct($entity){
+    $this->setUrl('report/stock/' . $entity);
+  }
+
+  public function updateData($limit)
+  {
+    $size = $this->getSize();
+    $limit = 100;
+    $offset = 0;
+    $result;
+
+    while (($size > $offset) && ($offset < $limitdbea)) {
+      foreach ($this->getItemsInterface($offset, $limit)->rows as $row) {
+        $result[] = $row;
+      }
+
+
+      $offset += $limit;
+    }
+    return $result;
+  }
+
+}

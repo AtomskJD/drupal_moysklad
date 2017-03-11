@@ -77,7 +77,7 @@ class Goods
   }
   
   public function getSell_price(){
-    return $this->sell_price;
+    return $this->sell_price*100;
   }
   
   public function getQuantity(){
@@ -160,7 +160,7 @@ class Goods
           foreach ($query as $row) {
             $vid = $row->vid;
             db_update('uc_products')
-              ->fields(array('sell_price' => $price))
+              ->fields(array('sell_price' => ($price / 100) ))
               ->condition('nid', $this->nid)
               ->condition('vid', $vid)
               ->execute();
@@ -176,6 +176,7 @@ class Goods
 
 
   public function setQuantity($quantity) {
+    // TODO: set check if exist
     if ($this->nid && $this->code) {
       db_update('uc_product_stock')
               ->fields(array('stock' => $quantity))
@@ -185,6 +186,52 @@ class Goods
 
         return TRUE;
     }
+  }
+
+  public function setCode($code)
+  {
+    if ($this->nid) {
+      db_update('uc_products')
+              ->fields(array('model' => $code))
+              ->condition('nid', $this->nid)
+              ->execute();
+
+        return TRUE;
+    }
+  }
+
+  // TODO: добавить инетрфейс
+  // к goods
+  public function newItem($code)
+  {
+      $complaint_body = 'Your node complaint body text';
+        $node = new stdClass();  // Create a new node object
+        $node->type = 'product';  // Content type
+        $node->language = LANGUAGE_NONE;  // Or e.g. 'en' if locale is enabled
+        node_object_prepare($node);  //Set some default values
+
+        $node->title = $code;
+        $node->body[$node->language][0]['format'] = 'full_html';
+
+        $node->sell_price = 0;
+        $node->model = $code;
+
+        $node->status = 1;   // (1 or 0): published or unpublished
+        $node->promote = 0;  // (1 or 0): promoted to front page or not
+        $node->sticky = 0;  // (1 or 0): sticky at top of lists or not
+        $node->comment = 0;  // 2 = comments open, 1 = comments closed, 0 = comments hidden
+        // Add author of the node
+        $node->uid = 1;
+        // Set created date
+        $node->date = 'complaint_post_date';
+        $node->created = strtotime('complaint_post_date');
+        // Save the node
+        node_save($node);
+
+        $this->nid = $node->nid;
+
+        dpm(node_load($node->nid));
+        return ($node->nid);
   }
 
 }
