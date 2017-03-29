@@ -108,14 +108,42 @@ class AdminPage
                 );
 
 */
-        // КНОПКА для создания нового заказа
+ /*       // КНОПКА для создания нового заказа
         $this->form['create_new_product'] = array(
                 '#type' => 'submit',
                 '#value' => 'CREATE new ORDER',
                 '#weight' => 40,
                 '#submit' => array('createOneNewOrder'),
                 );
+*/
+        
+    /*
+        // КНОПКА для поиска товара
+        $this->form['find_by_model'] = array(
+                '#type' => 'submit',
+                '#value' => 'find_by_model',
+                '#weight' => 45,
+                '#submit' => array('findByModel'),
+                );
 
+        */
+    
+    /*        // КНОПКА для поиска товара
+        $this->form['find_agent'] = array(
+                '#type' => 'submit',
+                '#value' => 'find agent',
+                '#weight' => 45,
+                '#submit' => array('checkAgent'),
+                );
+*/
+
+        // КНОПКА для поиска товара
+        $this->form['find_organization'] = array(
+                '#type' => 'submit',
+                '#value' => 'find org',
+                '#weight' => 45,
+                '#submit' => array('checkOrg'),
+                );
         
     }
 

@@ -20,7 +20,7 @@ function _admin_check_connection () {
         'Authorization: Basic '. base64_encode(variable_get('moysklad_login').":". variable_get('moysklad_pass') ) // <---
 );
     // $process = curl_init('https://online.moysklad.ru/api/remap/1.0/report/stock/all');
-    $process = curl_init('https://online.moysklad.ru/api/remap/1.0/entity/store');
+    $process = curl_init('https://online.moysklad.ru/api/remap/1.0/entity/organization');
     curl_setopt($process, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($process, CURLOPT_HEADER, 0);
         curl_setopt($process, CURLOPT_TIMEOUT, 30);
@@ -133,5 +133,43 @@ function product_interface () {
 
 function createOneNewOrder() {
   $moyOrder = new OrderConnector();
-  dpm($moyOrder->setOrder());
+  $o = array('delivery_first_name' => "dev@surweb.ru",
+    'delivery_last_name' => "test",
+    'primary_email' => "dev@surweb.ru",
+    'delivery_phone' => "test",
+    'delivery_company' => "companyy test",
+    );
+  dpm($moyOrder->setOrder($o));
+}
+
+function findByModel($model)
+{
+  $goods = new GoodsReportConnector('all');
+  $goods->findByModel("TY11214BR");
+  dpm($goods->getItem());
+}
+
+function checkAgent() {
+  $params = array(
+      "delivery_first_name"        => "name",
+      "delivery_last_name"        => "name",
+      "primary_email"       => "dev@surweb.ru",
+      "delivery_phone"       => "888888888",
+      "delivery_company"  => "company",
+      );
+  $agent = new Agent("dev@surweb.ru");
+  dvm($agent->getAgent());
+  if (!$agent->is_exists()) {
+      dvm($params);
+      $agent->setAgent($params);
+
+      dvm($agent->getAgent());
+    }
+}
+
+function checkOrg()
+{
+  $organization = new Organization();
+  dpm($organization->getMeta());
+  dpm($organization->getOrganization());
 }
