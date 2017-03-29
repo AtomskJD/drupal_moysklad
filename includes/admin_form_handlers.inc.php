@@ -169,7 +169,8 @@ function checkAgent() {
 
 function checkOrg()
 {
-  $organization = new Organization();
-  dpm($organization->getMeta());
-  dpm($organization->getOrganization());
+  $agent = new Agent("info@surweb.ru");
+  dpm($agent->getMeta());
+
+
 }

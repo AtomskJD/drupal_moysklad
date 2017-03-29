@@ -72,7 +72,7 @@ class Connector
       if (is_null($search)) {
         $url = $this->url . "?offset=$offset&limit=$limit";
       } else {
-        $url = $this->url . "?offset=$offset&limit=$limit&serach=$search";
+        $url = $this->url . "?offset=$offset&limit=$limit&search=$search";
       }
 
       dpm($url);
@@ -289,7 +289,8 @@ class Agent extends Connector
   {
     $this->setEntity("counterparty");
     if ($mail) {
-      $agent_probe = $this->getByMail($mail);
+      $agent_probe = $this->search($mail);
+      // $agent_probe = $this->getByMail($mail);
       
       if ($agent_probe) {
         $this->is_exists = true;
@@ -314,6 +315,17 @@ class Agent extends Connector
       );
     // dpm($body);
     $this->agent = $this->setItemsInterface(json_encode($body));
+  }
+
+  public function search($needle)
+  {
+    foreach ($this->getItemsInterface(0, 100, $needle)->rows as $row) {
+        $result[] = $row;
+        if ($row->email == $needle) {
+          return $row;
+        }
+      }
+      
   }
 
 
@@ -473,7 +485,7 @@ class OrderConnector extends Connector
       $agent->setAgent($params);
     }
 
-    // dpm($agent->getMeta());
+    dpm($agent->getMeta());
 
     foreach ($params->products as $order_product) {
       $good = new GoodsReportConnector('all');
