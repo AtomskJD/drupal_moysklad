@@ -17,6 +17,7 @@ class Organization extends Connector
 
   public function getMeta()
   {
-    return $this->getItems(0, 1)[0]->meta;
+    $tmp = $this->getItems(0, 1);
+    return $tmp[0]->meta;
   }
 }

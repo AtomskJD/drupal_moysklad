@@ -28,6 +28,7 @@ class Agent extends Connector
 
   public function is_exists()
   {
+    // var_dump($this->is_exists);
     return $this->is_exists;
   }
 
@@ -42,6 +43,7 @@ class Agent extends Connector
       );
     // dpm($body);
     $this->agent = $this->setItemsInterface(json_encode($body));
+    // var_dump($this->agent = $this->setItemsInterface(json_encode($body)));
   }
 
   public function search($needle)

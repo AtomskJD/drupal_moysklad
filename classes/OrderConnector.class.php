@@ -14,7 +14,8 @@ class OrderConnector extends Connector
 
   public function setOrder($params)
   {
-
+    $coup = 0;
+    $coup_desc = "";
     if ($coupons = $params->data['coupons']) {
       foreach ($coupons as $coupon => $coupon_val) {
         if (function_exists('_coupon_type_description')) {
@@ -32,7 +33,7 @@ class OrderConnector extends Connector
       $agent->setAgent($params);
     }
 
-    dpm($agent->getMeta());
+    // var_dump($agent->getMeta());
 
     foreach ($params->products as $order_product) {
       $good = new GoodsReportConnector('all');
@@ -40,13 +41,24 @@ class OrderConnector extends Connector
       $good->search($order_product->model);
       // $good->findByModel($order_product->model);
 
-      $products[] = array(
-        "price" => (float)($order_product->price)*100,
-        "discount" => $coup,
-        "quantity" => (float)$order_product->qty,
-        "reserve" => (float)$order_product->qty,
-        "assortment" => array("meta" => $good->getMeta()),
+      if ($coup) {
+        $products[] = array(
+          "price" => (float)($order_product->price)*100,
+          "discount" => $coup,
+          "quantity" => (float)$order_product->qty,
+          "reserve" => (float)$order_product->qty,
+          "assortment" => array("meta" => $good->getMeta()),
         );
+
+      } else {        
+
+        $products[] = array(
+          "price" => (float)($order_product->price)*100,
+          "quantity" => (float)$order_product->qty,
+          "reserve" => (float)$order_product->qty,
+          "assortment" => array("meta" => $good->getMeta()),
+        );
+      }
       
     }
     $deliv = '';
@@ -76,10 +88,13 @@ class OrderConnector extends Connector
                   );
 
 
-    dpm($body, '$body');
     $respond = $this->setItemsInterface(json_encode($body));
+
+
     if ($respond->errors) {
-      dpm(microtime(true) - $t_start, "new test timer errors");
+      // dpm(microtime(true) - $t_start, "new test timer errors");
+  
+        drupal_set_message($respond->errors[0]->error, 'error', TRUE);
       return array('errors' => $respond->errors);
     } else {
 

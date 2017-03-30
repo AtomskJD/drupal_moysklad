@@ -60,7 +60,7 @@ switch ($coupon) {
     
 
     default:
-      $coup = 1;
+      $coup = 0;
       $coup_desc = "";
       break;
   }
