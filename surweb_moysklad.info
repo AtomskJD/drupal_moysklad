@@ -9,9 +9,18 @@ dependencies[] = uc_store
 dependencies[] = uc_stock
 
 files[] = classes/connector.class.php
+
+; connector's children
+files[] = classes/Agent.class.php
+files[] = classes/Organization.class.php
+files[] = classes/GoodsReportConnector.class.php
+files[] = classes/OrderConnector.class.php
+files[] = classes/OrderProducts.class.php
+files[] = classes/Connectorzz.class.php
+
 files[] = classes/goods.class.php
 files[] = classes/admin_form.class.php
 files[] = classes/order.class.php
 files[] = classes/syncpage.class.php
-version="7.x-2.0-dev"
+version="7.x-2.2-dev"
 project="moysklad"

@@ -172,5 +172,6 @@ function checkOrg()
   $agent = new Agent("info@surweb.ru");
   dpm($agent->getMeta());
 
+  dpm(_delivery_type_description(uc_extra_fields_pane_value_load(26098, 12, 1)->value), 'delivery');
 
 }
