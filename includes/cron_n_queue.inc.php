@@ -17,11 +17,14 @@ function queueWorker_goods($data) {
   $goodsConnector = new GoodsReportConnector('all');
   $ts = microtime(true);
   // $goodsConnector->getItems($data['offset'], $data['limit']);
+  $log_array = variable_get('moysklad_queue_log', '');
+  
   foreach ($goodsConnector->getItems($data['offset'], $data['limit']) as $item) {
 
     $local_good = new Goods( $goodsConnector->getModel($item) );
 
     if ($local_good->exists()) {
+
       if (!$local_good->is_new()) {
         // проверяет совпадение цены договор интерфейса - внутренний
         if (($local_good->getSell_price()) != ($goodsConnector->getSell_price($item))) {
@@ -30,7 +33,9 @@ function queueWorker_goods($data) {
         // проверяет количество на складе 
         if ($local_good->getQuantity() != $goodsConnector->getQuantity($item)) {
           $local_good->setQuantity($goodsConnector->getQuantity($item));
-          file_put_contents('logs/queue_log.txt', $local_good->getModel()."изменил количество на".$goodsConnector->getQuantity($item)."\r\n", FILE_APPEND);
+
+          $log_array[] = "[" . $local_good->getModel()."]"." изменил количество на: ".$goodsConnector->getQuantity($item);
+          // file_put_contents('logs/queue_log.txt', $local_good->getModel()."изменил количество на".$goodsConnector->getQuantity($item)."\r\n", FILE_APPEND);
         }
         // проверяет совпадение заголовков
         if ($local_good->getName() != $goodsConnector->getName($item)) {
@@ -42,14 +47,16 @@ function queueWorker_goods($data) {
         $local_good->setName($goodsConnector->getName($item));
         $local_good->setSell_price($goodsConnector->getSell_price($item));
         $local_good->setQuantity($goodsConnector->getquantity($item));
-        
-        file_put_contents('logs/queue_log.txt', "Создан новый товар : ".$nid."\r\n", FILE_APPEND);
 
+
+        $log_array[] = "[".$goodsConnector->getModel($item)."]"."Создан новый товар: ".$nid;
+        // file_put_contents('logs/queue_log.txt', "Создан новый товар : ".$nid."\r\n", FILE_APPEND);
       }
     }
 
-  }
+  } // end foreach()
 
+        variable_set('moysklad_queue_log', $log_array);
   
 
 	variable_set('last_worker_info', "<strong>Выполнение очереди: </strong>" . date('d/m  H:i:s') . " Время выполнения: " . (microtime(true) - $ts) . " queried offset " . $data['offset']);

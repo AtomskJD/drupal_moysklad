@@ -48,7 +48,7 @@ class GoodsReportConnector extends Connector
     while ($size > $offset) {
       foreach ($this->getItemsInterface($offset, $limit)->rows as $row) {
         if ($row->code == $model) {
-          dpm(microtime(true) - $t_start, "search timer");
+          // dpm(microtime(true) - $t_start, "search timer");
           $this->item = $row;
           return $row;
         }
@@ -58,7 +58,7 @@ class GoodsReportConnector extends Connector
       $offset += $limit;
     }
 
-    dpm(microtime(true) - $t_start, "search timer");
+    // dpm(microtime(true) - $t_start, "search timer");
     return false;  
   }
 
@@ -68,7 +68,7 @@ class GoodsReportConnector extends Connector
 
     foreach ($this->getItemsInterface(0, 100, $needle)->rows as $row) {
       if ($row->code == $needle) {
-          dpm(microtime(true) - $t_start, "new search timer");
+          // dpm(microtime(true) - $t_start, "new search timer");
           $this->item = $row;
           return $row;
       }

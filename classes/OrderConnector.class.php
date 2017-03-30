@@ -87,8 +87,8 @@ class OrderConnector extends Connector
       // $order_products->setProducts($products);
 
 
-      dpm(microtime(true) - $t_start, "new test timer Ok");
-      dpm($respond);
+      // dpm(microtime(true) - $t_start, "new test timer Ok");
+      // dpm($respond);
       return $respond;
     }
   }

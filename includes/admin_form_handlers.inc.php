@@ -27,7 +27,13 @@ function _admin_check_connection () {
         // curl_setopt($process, CURLOPT_POST, 1);
         curl_setopt($process, CURLOPT_RETURNTRANSFER, TRUE);
         $return = curl_exec($process);
-        dpm(json_decode($return));
+        if (json_decode($return)->errors[0]) {
+          drupal_set_message(json_decode($return)->errors[0]->error, 'warning', TRUE);
+        } else {
+          drupal_set_message("Соединение с сервером МоегоСклада установлено и проверено", 'status', TRUE);
+          
+        }
+        // dpm(json_decode($return));
 
         curl_close($process);
 }
@@ -50,6 +56,15 @@ function goods_queue_set()
   }
 
   // dpm(microtime(true) - $ts, 'queue timer');
+
+  // поддержание очереди в приемлемом размере
+  $log_array = variable_get('moysklad_queue_log', '');
+  if (count($log_array > 500)) {
+    $log_array = array_chunk($log_array, 500);
+    $log_array = array_pop($log_array);
+  }
+  
+  variable_set('moysklad_queue_log', $log_array);
 
   variable_set( 'last_queue_info', "<strong>Создание очереди: </strong>" . date('d/m  H:i:s') . " Количество элементов в очереди: " . $queue->numberOfItems() );
 
@@ -169,9 +184,19 @@ function checkAgent() {
 
 function checkOrg()
 {
-  $agent = new Agent("info@surweb.ru");
-  dpm($agent->getMeta());
+  variable_set('moysklad_queue_log', array('text', 'test', 'indigo', 'tengo'));
+  dpm(variable_get('moysklad_queue_log', 'default'));
 
-  dpm(_delivery_type_description(uc_extra_fields_pane_value_load(26098, 12, 1)->value), 'delivery');
+}
 
+function getLogs() {
+  $log_array = variable_get('moysklad_queue_log', '');
+  if (count($log_array > 500)) {
+    $log_array = array_chunk($log_array, 500);
+    $log_array = array_pop($log_array);
+  }
+
+  $log_array = array_reverse($log_array);
+
+  return implode("\n", $log_array);
 }

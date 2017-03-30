@@ -18,7 +18,7 @@ class Connector
   }
   protected function setEntity($entity)
   {
-    dpm($this->url = self::BASEURL . "entity/" . $entity);
+    $this->url = self::BASEURL . "entity/" . $entity;
   }
 
   // // впринципе покрывает 90% API
@@ -46,7 +46,7 @@ class Connector
         $url = $this->url . "?offset=$offset&limit=$limit&search=$search";
       }
 
-      dpm($url);
+      // dpm($url);
 
         $process = curl_init($url);
 
@@ -138,7 +138,7 @@ class Connector
       $offset += $limit;
     }
 
-    dpm(microtime(true) - $t_start, "request timer");
+    // dpm(microtime(true) - $t_start, "request timer");
     return $result;
   }
 
@@ -171,7 +171,7 @@ class Connector
       $offset += $limit;
     }
 
-    dpm(microtime(true) - $t_start, "request timer");
+    // dpm(microtime(true) - $t_start, "request timer");
     return $result;
   }
 
@@ -210,7 +210,7 @@ class Connector
         $t_start = microtime(true);
 
           $result[] = $this->getItemsInterface($offset, $limit)->rows;
-          dpm(microtime(true) - $t_start, "page request timer :: ".$offset);
+          // dpm(microtime(true) - $t_start, "page request timer :: ".$offset);
 
         $offset += $limit;
 

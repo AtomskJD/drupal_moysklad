@@ -230,7 +230,7 @@ class Goods
 
         $this->nid = $node->nid;
 
-        dpm(node_load($node->nid));
+        // dpm(node_load($node->nid));
         return ($node->nid);
   }
 
