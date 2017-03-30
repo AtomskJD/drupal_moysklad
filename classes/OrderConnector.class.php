@@ -44,6 +44,7 @@ class OrderConnector extends Connector
         "price" => (float)($order_product->price)*100,
         "discount" => $coup,
         "quantity" => (float)$order_product->qty,
+        "reserve" => (float)$order_product->qty,
         "assortment" => array("meta" => $good->getMeta()),
         );
       
