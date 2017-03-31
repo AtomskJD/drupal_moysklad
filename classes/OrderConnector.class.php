@@ -62,22 +62,35 @@ class OrderConnector extends Connector
       
     }
     $deliv = '';
+
     if(function_exists('uc_extra_fields_pane_value_load') && function_exists('_delivery_type_description')){
       $dd = uc_extra_fields_pane_value_load($params->order_id, 12, 1);
       $deliv = "Предпочтительный способ доставки: " . _delivery_type_description($dd->value) . "\n";
     }
 
-    $comment = uc_order_comments_load($params->order_id);
+    ////////////////////////////////////////
+    // шапка Комментария с номером заказа //
+    ////////////////////////////////////////
     $description = "Оформлен новый заказ №".$params->order_id." на сайте ".variable_get('site_name', 'Drupal') ."\n";
     if ($coup_desc) {
       $description .= "Клиенту предоставлена скидка: " . $coup_desc . "\n";
     }
 
+    /////////////////////////
+    // адрес в Комментарий //
+    /////////////////////////
+    $description .= $deliv;
+    $description .= "Адрес доставки: " . $params->delivery_city . " " . $params->delivery_street1 . " " . $params->delivery_street2 . "\n";
+
+
+    /////////////////////////////////////////
+    // комментарий к заказу в Комментарий  //
+    /////////////////////////////////////////
+    $comment = uc_order_comments_load($params->order_id);
     if ($comment[0]->message) {
       $description .= "Комментарий клиента: " . $comment[0]->message . "\n";
     }
 
-    $description .= $deliv;
 
     // имя заказа присваивает сам мойсклад
     $body = array(
