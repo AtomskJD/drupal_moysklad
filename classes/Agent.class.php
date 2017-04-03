@@ -36,10 +36,10 @@ class Agent extends Connector
   public function setAgent($params)
   {
     $body = array(
-      "name"        => (string)($params->delivery_first_name . " " . $params->delivery_last_name),
-      "email"       => (string)$params->primary_email,
+      "name"        => (string)($params->delivery_last_name . " " . $params->delivery_first_name) . " " . (string)$params->delivery_company,
+      "email"       => strtolower( (string)$params->primary_email ),
       "phone"       => (string)$params->delivery_phone,
-      "legalTitle"  => (string)$params->delivery_company,
+      // "legalTitle"  => (string)$params->delivery_company,
       );
     // dpm($body);
     $this->agent = $this->setItemsInterface(json_encode($body));
@@ -50,7 +50,7 @@ class Agent extends Connector
   {
     foreach ($this->getItemsInterface(0, 100, $needle)->rows as $row) {
         $result[] = $row;
-        if ($row->email == $needle) {
+        if ( strtolower($row->email) == strtolower($needle) ) {
           return $row;
         }
       }
