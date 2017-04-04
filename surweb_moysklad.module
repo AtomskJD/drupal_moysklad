@@ -22,6 +22,7 @@ function surweb_moysklad_permission() {
 
 /**
  * Implements hook menu
+ * Страницы модуля (Страница настройки и страница для запуска по cron)
  */
 
 function surweb_moysklad_menu () {

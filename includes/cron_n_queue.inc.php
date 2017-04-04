@@ -13,12 +13,12 @@ function surweb_moysklad_cron_queue_info() {
 
 
 function queueWorker_goods($data) {
-	// $goodsConnector = new ReportConnector('all');
+	
   $goodsConnector = new GoodsReportConnector('all');
   $ts = microtime(true);
-  // $goodsConnector->getItems($data['offset'], $data['limit']);
-  $log_array = variable_get('moysklad_queue_log', '');
   
+  $log_array = variable_get('moysklad_queue_log', '');
+
   foreach ($goodsConnector->getItems($data['offset'], $data['limit']) as $item) {
 
     $local_good = new Goods( $goodsConnector->getModel($item) );
@@ -41,6 +41,18 @@ function queueWorker_goods($data) {
         if ($local_good->getName() != $goodsConnector->getName($item)) {
           $local_good->setName($goodsConnector->getName($item));
         }
+
+        ///////////////////////////////////////////////////
+        // удаляю существующий nid из списка на очистку  //
+        ///////////////////////////////////////////////////
+        $node_clean_manager = variable_get('moysklad_clean_manager', NULL);
+        if (!is_null($node_clean_manager)) {
+          unset($node_clean_manager[$local_good->getNid()]);
+
+          variable_set('moysklad_clean_manager', $node_clean_manager);
+        }
+
+
       } else {
         // создание нового товара при изначальном не совпадении sku
         $nid = $local_good->newItem($goodsConnector->getModel($item));

@@ -31,7 +31,7 @@ class Goods
         ->execute()
         ->fetchAll();
 
-        dvm(count($query), 'count');
+        // dvm(count($query), 'count');
       if (count($query) == 1) {
         $this->is_new = FALSE;
           // если есть валидный товар

@@ -44,6 +44,14 @@ function queue_info() {
   return "<strong>Осталось элементов в очереди: </strong>"  .  $queue->numberOfItems();
 }
 
+
+
+/**
+ * ЗАПУСКАЕТСЯ ПО CRON
+ * постановка очереди ссылок на закачку остатков
+ * и запуск очистки мусора
+ * @return [type] [description]
+ */
 function goods_queue_set()
 {
   $test = new ReportConnector('all');
@@ -55,7 +63,6 @@ function goods_queue_set()
     $queue->createItem($request);
   }
 
-  // dpm(microtime(true) - $ts, 'queue timer');
 
   // поддержание очереди в приемлемом размере
   $log_array = variable_get('moysklad_queue_log', '');
@@ -68,7 +75,44 @@ function goods_queue_set()
 
   variable_set( 'last_queue_info', "<strong>Создание очереди: </strong>" . date('d/m  H:i:s') . " Количество элементов в очереди: " . $queue->numberOfItems() );
 
+
+  // теперь очередь очистки
+  $node_clean_manager = variable_get('moysklad_clean_manager', NULL);
+  if ((!is_null($node_clean_manager)) && (!empty($node_clean_manager))) {
+    // TODO: выполнить очистку нод по NID и очистить moysklad_clean_manager
+
+    foreach (array_flip($node_clean_manager) as $nid) {
+      db_update('uc_product_stock')
+              ->fields(array('stock' => 0))
+              ->condition('nid', $nid)
+              ->execute();
+    }
+  } 
+
+  // TODO: небходимо наполнить moysklad_clean_manager
+
+  $node_clean_manager = array();
+    $query = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('n.type', 'product')
+        ->execute()
+        ->fetchAll();
+
+        foreach ($query as $row) {
+          $node_clean_manager[] = $row->nid;
+        }
+
+        // теперь надеемся что очередь сделает свое дело и 
+        // удалит существующие записи из пременной
+        variable_set('moysklad_clean_manager', array_flip($node_clean_manager));
+
+
+  dpm(microtime(true) - $ts, 'queue timer');
+  
+
 }
+
+
 
 function queue_claim() {
   $queue = DrupalQueue::get('surweb_moysklad_goods');
@@ -184,8 +228,19 @@ function checkAgent() {
 
 function checkOrg()
 {
-  variable_set('moysklad_queue_log', array('text', 'test', 'indigo', 'tengo'));
-  dpm(variable_get('moysklad_queue_log', 'default'));
+  // $node_clean_manager = array();
+  //   $query = db_select('node', 'n')
+  //       ->fields('n', array('nid'))
+  //       ->condition('n.type', 'product')
+  //       ->execute()
+  //       ->fetchAll();
+
+  //       foreach ($query as $row) {
+  //         $node_clean_manager[] = $row->nid;
+  //       }
+
+  dpm(variable_get('moysklad_clean_manager', NULL));
+
 
 }
 
