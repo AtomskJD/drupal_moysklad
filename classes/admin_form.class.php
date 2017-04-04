@@ -158,13 +158,13 @@ class AdminPage
               );
 */
 
-      // КНОПКА тестирования всякого
+/*      // КНОПКА тестирования всякого
       $this->form['find_organization'] = array(
               '#type' => 'submit',
               '#value' => 'find org',
               '#weight' => 45,
               '#submit' => array('checkOrg'),
-              );
+              );*/
       
   }
 
